@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="utf-8">
+
+
+<script src="{{ static('js/biliutils.js') }}"></script>
+
+<script>
+
+    const api = new BiliAPI("{{ url('proxy', query_={'key': key}) }}")
+    const bvParser = new BVParser()
+
+    async function likeVideo(aid) {
+        try {
+            const response = await api.pfetch("https://app.bilibili.com/x/v2/view/like", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: `aid=${aid}&like=0`,
+            })
+            if (response.ok){
+                return await response.json();
+            }
+        } catch (err) {
+            console.log(err);
+            return null
+        }
+    }
+
+    async function hateVideo(aid) {
+        try {
+            const response = await api.pfetch("https://app.biliapi.net/x/v2/view/dislike", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: `aid=${aid}&dislike=0`,
+            })
+            if (response.ok){
+                return await response.json();
+            }
+        } catch (err) {
+            console.log(err);
+            return null
+        }
+    }
+
+    function resultHandler(data){
+        if (data.code === 0) {
+            window.alert("操作成功")
+        } else {
+            window.alert(`操作失败: ${data.message}`);
+        }
+    }
+
+    function clickToLike() {
+        const formData = new FormData(document.getElementById("form1"))
+        api.uid = Number(formData.get('uid'))
+        let aid = formData.get('aid')
+        if (bvParser.isBV(aid)) {
+            aid = bvParser.dec(aid)
+        }else{
+            aid = Number(aid)
+        }
+        likeVideo(aid).then(resultHandler)
+    }
+
+    function clickToHate() {
+        const formData = new FormData(document.getElementById("form1"))
+        api.uid = Number(formData.get('uid'))
+        let aid = formData.get('aid')
+        if (bvParser.isBV(aid)) {
+            aid = bvParser.dec(aid)
+        }else{
+            aid = Number(aid)
+        }
+        hateVideo(aid).then(resultHandler)
+    }
+
+
+</script>
+</head>
+
+<body>
+
+    <form id="form1">
+        已登录账号:<br>
+        <select name="uid">
+        {% for a in accounts %}
+            <option value="{{ a.uid }}">{{ a.name }}</option>
+        {% endfor %}
+        </select>
+        <br>
+        视频aid或BV号:<br>
+        <input type="text" name="aid">
+        <br>
+    </form>
+    <br>
+    <button onclick="clickToLike()">赞</button>
+    <button onclick="clickToHate()">踩</button>
+    <br><br>
+    <h3>代理服务url：{{ proxy_url }}</h3>
+
+</body>
+
+</html>

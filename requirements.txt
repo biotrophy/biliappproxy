@@ -1,0 +1,5 @@
+aiohttp
+aiohttp_cors
+aiohttp-jinja2
+loguru
+pyyaml
