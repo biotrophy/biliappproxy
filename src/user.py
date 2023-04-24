@@ -34,6 +34,8 @@ class BiliUser:
         """
         登录验证
         """
+        if not self.access_key:
+            return False
         loginInfo = await self.api.loginVerift()
         self.mid, self.name = loginInfo['mid'], loginInfo['name']
         self.log = logger.bind(user=self.name)
@@ -53,4 +55,7 @@ class BiliUser:
             self.errmsg.append("登录失败 可能是 access_key 过期 , 请重新获取")
             await self.session.close()
 
+    async def logout(self):
+        await self.session.close()
+        self.log.log("WARNING", str(self.mid) + " 退出登录")
 

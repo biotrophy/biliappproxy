@@ -22,24 +22,32 @@ class IndentDumper(yaml.Dumper):
     def increase_indent(self, flow=False, indentless=False):
         return super(IndentDumper, self).increase_indent(flow=False, indentless=False)
 
-def load_yaml(filename):
+def load_yaml(filename: str):
     try:
         if os.path.exists(filename):
             with open(filename, 'r', encoding='utf-8') as f:
-                config = yaml.safe_load(f)
-                users = config['USERS']
-                if config['KEY'] and len(users) > 1 and users[0]['access_key']:
+                conf = yaml.safe_load(f)
+                users = conf['USERS']
+                if conf['KEY']:
                     return {
-                        "USERS": users,
-                        "KEY": config["KEY"],
-                        "HOST": config.get('HOST', '127.0.0.1'),
-                        "PORT": int(config.get('PORT', 1211))
+                        "USERS": (len(users) > 0 and users[0]['access_key']) and users or [],
+                        "KEY": conf["KEY"],
+                        "HOST": conf.get('HOST', '127.0.0.1'),
+                        "PORT": int(conf.get('PORT', 1211))
                     }
             return
         else:
-            with open(filename, 'w', encoding='utf-8') as f:
-                yaml.dump(DEFAULT_CONFIG, f, Dumper=IndentDumper, default_flow_style=False, sort_keys=False)
-                return
+            dump_yaml(filename, DEFAULT_CONFIG)
+            return load_yaml(filename)
     except Exception as e:
         pass
 
+def dump_yaml(filename: str, conf: dict):
+    try:
+        if not conf['USERS']:
+            conf['USERS'] = [{'access_key': None}]
+        with open(filename, 'w', encoding='utf-8') as f:
+            yaml.dump(conf, f, Dumper=IndentDumper, default_flow_style=False, sort_keys=False)
+            return
+    except Exception as e:
+        pass

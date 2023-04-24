@@ -1,0 +1,55 @@
+{% from "macros.html" import render_nav, render_biliuser_table %}
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="utf-8">
+<title>配置 - {{ app['title'] }}</title>
+</head>
+
+<body>
+    {{ render_nav(request, key) }}
+    <h4>已登录账号:</h4>
+    {{ render_biliuser_table(biliusers) }}
+    <hr>
+    <form id="form_login_biliuser" method="POST">
+        登录账号:<br>
+        <br>
+        <lable>账号access_key (请使用login_win.exe扫码获取):</lable>
+        <br>
+        <textarea name="access_key" rows="10" cols="32" autocomplete="off" placeholder="如有多个access_key，请用换行符分隔"></textarea>
+        <br>
+        <input type="hidden" name="key" value="{{ key }}">
+        <input type="hidden" name="action" value="login_biliuser">
+        <br>
+        <input type="submit" value="登录">
+    </form>
+    <hr>
+    <form id="form_logout_biliuser" method="POST">
+        退出账号:<br>
+        <br>
+        <lable>账号UID:</label>
+        <br>
+        <input type="text" name="uid" size="36">
+        <br>
+        <input type="hidden" name="key" value="{{ key }}">
+        <input type="hidden" name="action" value="logout_biliuser">
+        <br>
+        <input type="submit" value="退出">
+    </form>
+    <hr>
+    <form id="form_reset_token" method="POST">
+        重置令牌:<br>
+        <br>
+        <lable>当前代理令牌:</lable>
+        <br>
+        <input type="text" name="key" value="{{ key }}" size="36" readonly >
+        <br>
+        <input type="hidden" name="action" value="rest_token">
+        <br>
+        <input type="submit" value="重置">
+    </form>
+
+</body>
+
+</html>

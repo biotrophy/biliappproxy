@@ -1,3 +1,5 @@
 USERS:
   - access_key: null
 KEY: a4d6d83d1e064b84aec60ccb67a21336
+HOST: 127.0.0.1
+PORT: 1211

@@ -1,0 +1,63 @@
+{% from "macros.html" import render_nav, render_biliuser_table %}
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="utf-8">
+<title>首页 - {{ app['title'] }}</title>
+</head>
+
+<body>
+    {{ render_nav(request, key) }}
+    <h4>已登录账号:</h4>
+    {{ render_biliuser_table(biliusers) }}
+    {% if biliusers|length == 0 %}
+    <p>尚未登录任何B站账号，代理无法正常运行，请通过顶部导航栏进入“配置”页面登录账号。</p>
+    {% endif %}
+    <hr>
+    <h4>
+    <ul>
+        <li>启动时间: <span id="starttime"></span></li>
+        <li>已运行: <span id="uptime"></span></li>
+        <li>版本: {{ app['version'] }}</li>
+        <li>代理服务url: {{ proxy_url }}</li>
+    </ul>
+    </h4>
+
+    <script>
+        function secTotime(s) {
+            var t = "";
+            if (s > -1) {
+                var hour = Math.floor(s / 3600);
+                var min = Math.floor(s / 60) % 60;
+                var sec = s % 60;
+                if (hour < 10) {
+                    t = "0" + hour + "小时 ";
+                } else {
+                    t = hour + "小时";
+                }
+                if (min < 10) {
+                    t += "0";
+                }
+                t += min + "分 ";
+                if (sec < 10) {
+                    t += "0";
+                }
+                t += sec.toFixed(0);
+            }
+            return t + "秒";
+        }
+    
+        (function(){
+            let st = Number("{{ app['start_ts'] }}");
+            document.getElementById("starttime").innerHTML = new Date(st).toLocaleString();
+            document.getElementById("uptime").innerHTML = secTotime((new Date().getTime()-st)/1000);
+            setInterval(() => {
+                document.getElementById("uptime").innerHTML = secTotime((new Date().getTime()-st)/1000);
+            }, 1000);
+        })()
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,36 @@
+{% macro render_biliuser_table(biliusers) %}
+    <table border="1">
+        <tr>
+            <th>UID</th>
+            <th>账号名</th>
+        </tr>
+        {% if biliusers %}
+            {% for a in biliusers %}
+        <tr>
+            <td>{{ a.uid }}</td>
+            <td>{{ a.name }}</td>
+        </tr>
+            {% endfor %}
+        {% else %}
+        <tr>
+            <td>暂无账号</td>
+            <td>什么都没有</td>
+        </tr>
+        {% endif %}
+    </table>
+{%- endmacro %}
+
+{% macro render_nav(request, key) %}
+<h3>
+    <nav>
+    {% for n in app['nav'] %}
+        {% if n[0] == request.match_info.route.resource.name %}
+        {{ n[1] }}
+        {% else %}
+        <a href="{{ url(n[0], query_={'key': key}) }}">{{ n[1] }}</a>
+        {% endif %}
+        {% if n[0] != app['nav'][-1][0] %} | {% endif %}
+    {% endfor %}
+    </nav>
+</h3>
+{%- endmacro %}

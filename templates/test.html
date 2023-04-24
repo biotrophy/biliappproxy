@@ -1,9 +1,10 @@
+{% from "macros.html" import render_nav %}
 <!DOCTYPE html>
 <html>
 
 <head>
 <meta charset="utf-8">
-
+<title>测试 - {{ app['title'] }}</title>
 
 <script src="{{ static('js/biliutils.js') }}"></script>
 
@@ -86,23 +87,24 @@
 
 <body>
 
+    {{ render_nav(request, key) }}
+
     <form id="form1">
-        已登录账号:<br>
+        <label>已登录账号:</label><br>
         <select name="uid">
-        {% for a in accounts %}
+        {% for a in biliusers %}
             <option value="{{ a.uid }}">{{ a.name }}</option>
         {% endfor %}
         </select>
-        <br>
-        视频aid或BV号:<br>
+        <br><br>
+        <label>视频aid或BV号:</label><br>
         <input type="text" name="aid">
         <br>
     </form>
     <br>
     <button onclick="clickToLike()">赞</button>
     <button onclick="clickToHate()">踩</button>
-    <br><br>
-    <h3>代理服务url：{{ proxy_url }}</h3>
+
 
 </body>
 
