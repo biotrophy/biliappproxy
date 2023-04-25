@@ -15,7 +15,7 @@
 
     async function likeVideo(aid) {
         try {
-            const response = await api.pfetch("https://app.bilibili.com/x/v2/view/like", {
+            const response = await api.fetch("https://app.bilibili.com/x/v2/view/like", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded",
@@ -33,7 +33,7 @@
 
     async function hateVideo(aid) {
         try {
-            const response = await api.pfetch("https://app.biliapi.net/x/v2/view/dislike", {
+            const response = await api.fetch("https://app.biliapi.net/x/v2/view/dislike", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded",
@@ -51,7 +51,7 @@
 
     function resultHandler(data){
         if (data.code === 0) {
-            window.alert("操作成功")
+            window.alert("操作成功");
         } else {
             window.alert(`操作失败: ${data.message}`);
         }
@@ -59,24 +59,24 @@
 
     function clickToLike() {
         const formData = new FormData(document.getElementById("form1"))
-        api.uid = Number(formData.get('uid'))
-        let aid = formData.get('aid')
+        api.uid = Number(formData.get('uid'));
+        let aid = formData.get('aid');
         if (bvParser.isBV(aid)) {
-            aid = bvParser.dec(aid)
+            aid = bvParser.dec(aid);
         }else{
-            aid = Number(aid)
+            aid = Number(aid);
         }
         likeVideo(aid).then(resultHandler)
     }
 
     function clickToHate() {
         const formData = new FormData(document.getElementById("form1"))
-        api.uid = Number(formData.get('uid'))
-        let aid = formData.get('aid')
+        api.uid = Number(formData.get('uid'));
+        let aid = formData.get('aid');
         if (bvParser.isBV(aid)) {
-            aid = bvParser.dec(aid)
+            aid = bvParser.dec(aid);
         }else{
-            aid = Number(aid)
+            aid = Number(aid);
         }
         hateVideo(aid).then(resultHandler)
     }

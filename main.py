@@ -88,15 +88,19 @@ async def test_handler(request: web.Request):
 
 @routes.post('/proxy', name="proxy")
 async def proxy_handler(request: web.Request):
-    argv = request.url.query
     data = await request.json()
-    res = {}
-    authkey = data['_key'] or argv.get('key')
+    res = {"code": -401, "message": "未认证 (或非法请求)", "ttl": 1}
+    authkey = data.get('_key') or request.url.query.get('key')
     if authkey == request.app['config']['KEY']:
-        if data['_uid'] in request.app['bili_users']:
-            biliuser = request.app['bili_users'][data['_uid']]
-            params = { key: data[key] for key in data.keys() if key not in ['_uid', '_key'] }
-            res = await biliuser.callapi(params)
+        if data.get('_uid') in request.app['bili_users']:
+            if data.get('url') and data['body']:
+                biliuser = request.app['bili_users'][data['_uid']]
+                params = { key: data[key] for key in data.keys() if key not in ['_uid', '_key'] }
+                res = await biliuser.callapi(params)
+            else:
+                res = {"code": 0, "message": "0", "ttl": 1}
+        else:
+            res = {"code": -101, "message": "账号未登录", "ttl": 1}
     return web.json_response(res)
 
 
@@ -106,7 +110,7 @@ async def middleware_auth(request: web.Request, handler):
     if resource and resource.name not in ["static", "proxy"]:
         authkey = request.url.query.get('key')
         if authkey != request.app['config']['KEY']:
-            return aiohttp_jinja2.render_template('anonymous.html', request, {'key': ''})
+            return aiohttp_jinja2.render_template('anonymous.html', request, {'key': '', "request": request})
     return await handler(request)
 
 

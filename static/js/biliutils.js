@@ -3,8 +3,8 @@ class BiliAPI {
     #key;
     constructor(proxy_url, key, uid) {
         const cookie = window.document.cookie;
-        this.#url = proxy_url
-        this.#key = key ?? null
+        this.#url = proxy_url;
+        this.#key = key ?? null;
         this.uid = uid ?? (cookie ? Number(cookie.match(/DedeUserID=(\w+)/)[1]) : null);
     }
 
@@ -12,15 +12,29 @@ class BiliAPI {
         this.#key = key
     }
 
-    pfetch(input, init){
-        init.url = input
-        init._key = this.#key
-        init._uid = this.uid
+    async checkProxy(){
+        if (!this.uid)
+            return false
+        try {
+            const response = await fetch(this.#url, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({_key: this.#key, _uid : this.uid, url: ''}),
+            })
+            if (response.ok){
+                return (await response.json()).code == 0;
+            }
+        } catch (err) {}
+        return false
+    }
+
+    fetch(input, init){
+        init.url = input;
+        init._key = this.#key;
+        init._uid = this.uid;
         return fetch(this.#url, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
+            headers: {"Content-Type": "application/json"},
             body: JSON.stringify(init),
         })
     }

@@ -1,4 +1,4 @@
-{% from "macros.html" import render_biliuser_table %}
+{% from "macros.html" import render_nav, render_biliuser_table %}
 <!DOCTYPE html>
 <html>
 
@@ -8,7 +8,7 @@
 </head>
 
 <body>
-    {% include 'navbar.html' %}
+    {{ render_nav(request, key) }}
     <h4>Hello, Anonymous:</h4>
     <form id="form_reset_token" method="GET">
         访问此页面需服务令牌:<br>
