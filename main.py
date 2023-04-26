@@ -104,13 +104,18 @@ async def proxy_handler(request: web.Request):
     return web.json_response(res)
 
 
+@aiohttp_jinja2.template('anonymous.html')
+async def anonymous_handler(request: web.Request):
+    return {'key': ''}
+
+
 @web.middleware
 async def middleware_auth(request: web.Request, handler):
     resource = request.match_info.route.resource
     if resource and resource.name not in ["static", "proxy"]:
         authkey = request.url.query.get('key')
         if authkey != request.app['config']['KEY']:
-            return aiohttp_jinja2.render_template('anonymous.html', request, {'key': '', "request": request})
+            return await anonymous_handler(request)
     return await handler(request)
 
 
@@ -149,7 +154,7 @@ def main():
     if not conf:
         log.error("读取配置文件失败,请检查配置文件格式是否正确")
         return
-    app = web.Application(middlewares=[middleware_auth])
+    app = web.Application()
     app['title'] = 'B站应用代理服务器'
     app['version'] = __VERSION__
     app['config'] = conf
@@ -157,6 +162,7 @@ def main():
     aiohttp_jinja2.setup(app,
         context_processors=[aiohttp_jinja2.request_processor],
         loader=jinja2.FileSystemLoader(os.path.join(config.BASE_PATH, 'templates')))
+    app.middlewares.append(middleware_auth)
     app.add_routes(routes)
     app.add_routes([web.static('/static', os.path.join(config.BASE_PATH, 'static'), name='static')])
     app['static_root_url'] = '/static'
